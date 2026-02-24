@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathTalent Line OA Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f0f2f5;
+        }
+
+        .line-chat-bg {
+            background-color: #8cabd9;
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+        }
+
+        .rich-menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 1px;
+            background-color: #e0e0e0;
+            border-top: 1px solid #ddd;
+        }
+
+        /* 2x2 Layout for Sub-menu */
+        .sub-menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 1px;
+            background-color: #e0e0e0;
+            border-top: 1px solid #ddd;
+        }
+
+        .rich-menu-item {
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-align: center;
+        }
+
+        .rich-menu-item:active {
+            background-color: #f3f4f6;
+        }
+
+        .brand-green { color: #2d7a4d; }
+        .brand-bg-green { background-color: #2d7a4d; }
+        .brand-yellow { color: #ffd100; }
+
+        .flex-message {
+            max-width: 85%;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Point Page Styles */
+        .point-card {
+            background: linear-gradient(135deg, #2d7a4d 0%, #1a4d31 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .point-card::after {
+            content: 'MT';
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 80px;
+            opacity: 0.1;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="flex justify-center items-center min-h-screen p-4">
+
+    <!-- Mobile Frame -->
+    <div class="w-full max-w-[390px] h-[800px] bg-white rounded-[3rem] border-[8px] border-gray-800 shadow-2xl relative overflow-hidden flex flex-col">
+        
+        <!-- Status Bar -->
+        <div class="bg-white px-8 pt-6 pb-2 flex justify-between items-center text-xs font-bold">
+            <span>9:41</span>
+            <div class="flex gap-1">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+
+        <!-- LINE Header -->
+        <div class="bg-[#2c3e50] text-white p-4 flex items-center gap-3">
+            <i id="backBtn" onclick="closeView()" class="fas fa-chevron-left invisible cursor-pointer"></i>
+            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden">
+                <img src="https://xpenta7.github.io/math-talent-system/assets/logo.png" alt="MathTalent Logo" onerror="this.src='https://ui-avatars.com/api/?name=Math+Talent&background=2d7a4d&color=fff'">
+            </div>
+            <div class="flex-1">
+                <h1 id="headerTitle" class="font-bold text-sm">MathTalent Official</h1>
+                <p id="headerStatus" class="text-[10px] opacity-80"><span class="h-2 w-2 bg-green-500 rounded-full inline-block mr-1"></span>บัญชีทางการ</p>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="relative flex-1 overflow-hidden">
+            
+            <!-- Chat Area -->
+            <div id="chatArea" class="absolute inset-0 line-chat-bg p-4 overflow-y-auto flex flex-col gap-4 z-10">
+                <div class="self-center bg-black/10 text-white text-[10px] px-3 py-1 rounded-full">วันนี้</div>
+
+                <!-- Welcome Message -->
+                <div class="flex gap-2">
+                    <div class="w-8 h-8 rounded-full bg-white overflow-hidden flex-shrink-0">
+                        <img src="https://ui-avatars.com/api/?name=MT&background=2d7a4d&color=fff" alt="Avatar">
+                    </div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none text-sm shadow-sm max-w-[70%]">
+                        สวัสดีค่ะ ยินดีต้อนรับสู่ MathTalent! คุณโอบีสามารถเช็คคะแนนสะสมและข่าวสารได้เลยค่ะ 💚
+                    </div>
+                </div>
+
+                <!-- Push Message -->
+                <div class="flex gap-2 self-start w-full">
+                    <div class="w-8 h-8 rounded-full bg-white overflow-hidden flex-shrink-0">
+                        <img src="https://ui-avatars.com/api/?name=MT&background=2d7a4d&color=fff" alt="Avatar">
+                    </div>
+                    <div class="flex-message border-l-4 border-[#2d7a4d]">
+                        <div class="p-4">
+                            <div class="text-[#2d7a4d] font-bold text-xs mb-1 uppercase tracking-wider italic">Appointment Reminder</div>
+                            <h3 class="font-bold text-lg mb-2">แจ้งเตือนนัดเข้าเรียน!</h3>
+                            <p class="text-xs text-gray-600 mb-4">อีก 2 วัน จะถึงกำหนดนัดเข้าเรียน Summer Course ของคุณแล้วค่ะ</p>
+                            
+                            <div class="space-y-2 bg-gray-50 p-3 rounded-xl mb-4 text-[13px]">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">ชื่อนักเรียน:</span>
+                                    <span class="font-semibold text-gray-800">น้องโอบี (ตัวน้อย)</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">วัน-เวลานัด:</span>
+                                    <span class="font-semibold text-gray-800 text-right">เสาร์ที่ 8 ก.พ. <br> 09:00 - 11:00 น.</span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <button class="w-full py-2 bg-[#2d7a4d] text-white rounded-lg font-medium text-sm">รายละเอียดการนัด</button>
+                                <button class="w-full py-2 border border-[#2d7a4d] text-[#2d7a4d] rounded-lg font-medium text-sm">ยืนยันนัด</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Points Dashboard View (Simulator) -->
+            <div id="pointsView" class="absolute inset-0 bg-white z-20 translate-y-full transition-transform duration-300 p-6 overflow-y-auto">
+                <div class="point-card mb-6 shadow-lg shadow-green-900/20">
+                    <p class="text-sm opacity-80 mb-1">คะแนนสะสมทั้งหมด</p>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-4xl font-bold tracking-tighter">1,250</span>
+                        <span class="text-lg opacity-90">Points</span>
+                    </div>
+                    <div class="mt-4 flex items-center gap-2 text-[10px]">
+                        <span class="bg-yellow-400 text-black px-2 py-0.5 rounded font-bold uppercase">Gold Member</span>
+                        <span class="opacity-70">หมดอายุ 31 ธ.ค. 2024</span>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h4 class="font-bold text-gray-800 mb-4 flex justify-between items-center">
+                        ประวัติการได้รับคะแนน
+                        <span class="text-xs font-normal text-[#2d7a4d]">ดูทั้งหมด</span>
+                    </h4>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between border-b pb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center">
+                                    <i class="fas fa-book-open text-[#2d7a4d]"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium">คะแนนเข้าเรียน</p>
+                                    <p class="text-[10px] text-gray-400">25 ม.ค. 2024</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-green-600">+50</span>
+                        </div>
+                        <div class="flex items-center justify-between border-b pb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center">
+                                    <i class="fas fa-trophy text-yellow-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium">คะแนนสอบ Top Class</p>
+                                    <p class="text-[10px] text-gray-400">18 ม.ค. 2024</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-green-600">+200</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 text-center">
+                    <p class="text-xs text-gray-500 mb-2">แลกรับของรางวัลที่เคาน์เตอร์ทุกสาขา</p>
+                    <button class="text-[#2d7a4d] font-bold text-sm">ดูรายการของรางวัล <i class="fas fa-chevron-right ml-1"></i></button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Keyboard Area -->
+        <div id="keyboardArea" class="bg-[#f7f7f7] p-2 flex items-center gap-3 border-t">
+            <i class="far fa-keyboard text-gray-500 text-xl"></i>
+            <div class="flex-1 bg-white border rounded-full px-4 py-1 text-gray-400 text-sm">พิมพ์ข้อความ...</div>
+            <i class="far fa-smile text-gray-500 text-xl"></i>
+            <i class="fas fa-plus text-gray-500 text-xl"></i>
+        </div>
+
+        <!-- Rich Menu Area -->
+        <div id="richMenuContainer" class="h-[250px] bg-white border-t">
+            <!-- Main Menu (3x2) -->
+            <div id="mainMenu" class="rich-menu-grid h-full">
+                <div onclick="toggleSubMenu(true)" class="rich-menu-item">
+                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mb-1">
+                        <i class="fas fa-user-graduate brand-green"></i>
+                    </div>
+                    <span class="text-[11px] font-medium">ข้อมูลนักเรียน</span>
+                </div>
+                <div class="rich-menu-item">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mb-1">
+                        <i class="fas fa-calendar-check text-blue-600"></i>
+                    </div>
+                    <span class="text-[11px] font-medium">ข้อมูลนัดหมาย</span>
+                </div>
+                <div class="rich-menu-item">
+                    <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mb-1">
+                        <i class="fas fa-history text-purple-600"></i>
+                    </div>
+                    <span class="text-[11px] font-medium">ประวัติการเรียน</span>
+                </div>
+                <div class="rich-menu-item">
+                    <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mb-1">
+                        <i class="fas fa-wallet text-yellow-600"></i>
+                    </div>
+                    <span class="text-[11px] font-medium">ชำระเงิน</span>
+                </div>
+                <a href="https://mathtalentschool.com/th/" target="_blank" class="rich-menu-item">
+                    <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mb-1">
+                        <i class="fas fa-bullhorn text-orange-600"></i>
+                    </div>
+                    <span class="text-[11px] font-medium">ข่าวสาร/โปรฯ</span>
+                </a>
+                <a href="https://mathtalentschool.com/th/all-branches/" target="_blank" class="rich-menu-item">
+                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mb-1">
+                        <i class="fas fa-map-marker-alt text-red-600"></i>
+                    </div>
+                    <span class="text-[11px] font-medium">สาขาทั้งหมด</span>
+                </a>
+            </div>
+
+            <!-- Sub Menu (2x2 Layout) -->
+            <div id="subMenu" class="sub-menu-grid h-full hidden">
+                <div class="rich-menu-item">
+                    <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center mb-1">
+                        <i class="fas fa-users-cog brand-green"></i>
+                    </div>
+                    <span class="text-[11px] font-medium">ข้อมูลผู้ปกครอง</span>
+                </div>
+                <div class="rich-menu-item border-l">
+                    <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center mb-1">
+                        <i class="fas fa-id-card brand-green"></i>
+                    </div>
+                    <span class="text-[11px] font-medium">ข้อมูลนักเรียน</span>
+                </div>
+                <div onclick="openPoints()" class="rich-menu-item border-t">
+                    <div class="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center mb-1">
+                        <i class="fas fa-star brand-yellow text-lg"></i>
+                    </div>
+                    <span class="text-[11px] font-medium">คะแนนสะสม</span>
+                </div>
+                <div onclick="toggleSubMenu(false)" class="rich-menu-item border-t border-l bg-gray-100">
+                    <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-1 shadow-sm">
+                        <i class="fas fa-reply text-gray-600"></i>
+                    </div>
+                    <span class="text-[11px] font-medium">ย้อนกลับ</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Indicator -->
+        <div class="bg-white pb-2 flex justify-center">
+            <div class="w-32 h-1 bg-gray-300 rounded-full"></div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSubMenu(show) {
+            const main = document.getElementById('mainMenu');
+            const sub = document.getElementById('subMenu');
+            if (show) {
+                main.classList.add('hidden');
+                sub.classList.remove('hidden');
+            } else {
+                main.classList.remove('hidden');
+                sub.classList.add('hidden');
+            }
+        }
+
+        function openPoints() {
+            const pointsView = document.getElementById('pointsView');
+            const backBtn = document.getElementById('backBtn');
+            const headerTitle = document.getElementById('headerTitle');
+            const headerStatus = document.getElementById('headerStatus');
+            
+            pointsView.classList.remove('translate-y-full');
+            backBtn.classList.remove('invisible');
+            headerTitle.innerText = "คะแนนสะสม (Points)";
+            headerStatus.classList.add('hidden');
+        }
+
+        function closeView() {
+            const pointsView = document.getElementById('pointsView');
+            const backBtn = document.getElementById('backBtn');
+            const headerTitle = document.getElementById('headerTitle');
+            const headerStatus = document.getElementById('headerStatus');
+            
+            pointsView.classList.add('translate-y-full');
+            backBtn.classList.add('invisible');
+            headerTitle.innerText = "MathTalent Official";
+            headerStatus.classList.remove('hidden');
+        }
+
+        // Auto-scroll chat
+        const chatArea = document.getElementById('chatArea');
+        chatArea.scrollTop = chatArea.scrollHeight;
+    </script>
+</body>
+</html>
